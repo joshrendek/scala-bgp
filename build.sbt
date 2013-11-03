@@ -8,6 +8,8 @@ scalaVersion := "2.10.3"
 
 resolvers += "Big Bee Consultants" at "http://repo.bigbeeconsultants.co.uk/repo"
 
+resolvers += "wasted.io/repo" at "http://repo.wasted.io/mvn"
+
 libraryDependencies ++= Seq(
   "org.scalatest" %% "scalatest" % "1.9.2" % "test",
     "uk.co.bigbeeconsultants" %% "bee-client" % "0.21.+",
@@ -19,7 +21,8 @@ libraryDependencies ++= Seq(
     "org.codehaus.groovy" % "groovy-all" % "1.8.8" % "test",
     "org.ccil.cowan.tagsoup" % "tagsoup" % "1.2",
     "org.seleniumhq.webdriver" % "webdriver-selenium" % "0.9.7376",
-    "org.seleniumhq.webdriver" % "webdriver-htmlunit" % "0.9.7376"
+    "org.seleniumhq.webdriver" % "webdriver-htmlunit" % "0.9.7376",
+    "io.wasted" %% "wasted-util" % "0.5.0-SNAPSHOT"
 )
 
 initialCommands := "import com.joshrendek.scalabgp._"
