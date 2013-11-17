@@ -31,47 +31,70 @@ object AutonomousSystem {
   }
 
   def countryOfOrigin(driver: HtmlUnitDriver) = {
-    driver.findElementByXPath("//*[@id=\"asinfo\"]/div[2]/div[2]").getText
+    try {
+      driver.findElementByXPath("//*[@id=\"asinfo\"]/div[2]/div[2]").getText
+    } catch {
+      case e: Exception => "N/A"
+    }
   }
 
   def prefixList(driver: HtmlUnitDriver): Seq[Prefix] = {
-    val prefixes = driver.findElementsByXPath("//*[@id=\"table_prefixes4\"]/tbody/tr")
-    prefixes.map {
-      prefix =>
-        val row = prefix.findElements(By.tagName("td")).map(f => f.getText).toList
-        val data = row(0).split("/")
-        val ipAddr = java.net.InetAddress.getByName(data(0))
-        Prefix(InetPrefix(ipAddr, data(1).toInt), row(1))
+    try {
+      val prefixes = driver.findElementsByXPath("//*[@id=\"table_prefixes4\"]/tbody/tr")
+      prefixes.map {
+        prefix =>
+          val row = prefix.findElements(By.tagName("td")).map(f => f.getText).toList
+          val data = row(0).split("/")
+          val ipAddr = java.net.InetAddress.getByName(data(0))
+          Prefix(InetPrefix(ipAddr, data(1).toInt), row(1))
+      }
+    } catch {
+      case e: Exception => Seq[Prefix]()
     }
   }
 
   def asPathLength(driver: HtmlUnitDriver) = {
-    driver.findElementByXPath("//*[@id=\"asinfo\"]/div[2]/div[10]")
-      .getText.split("\n")(0).split(":")(1).replaceAll(" ", "").toDouble
+    try {
+      driver.findElementByXPath("//*[@id=\"asinfo\"]/div[2]/div[10]")
+        .getText.split("\n")(0).split(":")(1).replaceAll(" ", "").toDouble
+    } catch {
+      case e: Exception => 0
+    }
 
   }
 
   def ipsOriginated(driver: HtmlUnitDriver) = {
-    driver.findElementByXPath("//*[@id=\"asinfo\"]/div[2]/div[8]")
-      .getText.split("\n")(0).split(":")(1).replaceAll(",", "").replaceAll(" ", "").toInt
+    try {
+      driver.findElementByXPath("//*[@id=\"asinfo\"]/div[2]/div[8]")
+        .getText.split("\n")(0).split(":")(1).replaceAll(",", "").replaceAll(" ", "").toInt
+    } catch {
+      case e: NoSuchElementException => 0
+      case e: Exception => 0
+    }
   }
 
   def bgpPeerList(driver: HtmlUnitDriver): Seq[BgpPeer] = {
-    val peers = driver.findElementsByXPath("//*[@id=\"table_peers4\"]/tbody/tr")
-    peers.map {
-      peer =>
-        val row = peer.findElements(By.tagName("td")).map(f => f.getText).toList
-        val ipv6 = if (row(2) == "X") true else false
-        BgpPeer(row(3), row(1), ipv6, row(0).toInt)
+    try {
+      val peers = driver.findElementsByXPath("//*[@id=\"table_peers4\"]/tbody/tr")
+      peers.map {
+        peer =>
+          val row = peer.findElements(By.tagName("td")).map(f => f.getText).toList
+          val ipv6 = if (row(2) == "X") true else false
+          BgpPeer(row(3), row(1), ipv6, row(0).toInt)
+      }
+    } catch {
+      case e: NoSuchElementException => Seq[BgpPeer]()
+      case e: Exception => Seq[BgpPeer]()
     }
   }
 }
 
 class AutonomousSystem(val as: Int, val bgpPeerList: Seq[BgpPeer],
                        val prefixList: Seq[Prefix], val ipsOriginated: Int,
-                       val asPathLength: Double, val countryOfOrigin: String) {
+                       val asPathLength: Double, val countryOfOrigin: String)
+  extends Serializable {
 
-  def contains(ipString : String): Boolean = {
+  def contains(ipString: String): Boolean = {
     val ip = InetAddress.getByName(ipString)
     prefixList.filter(p => p.subnet.contains(ip)).size > 0
   }
