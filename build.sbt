@@ -6,7 +6,7 @@ version := "0.0.2"
 
 scalaVersion := "2.10.3"
 
-resolvers += "Big Bee Consultants" at "http://repo.bigbeeconsultants.co.uk/repo"
+resolvers += "Big Bee Consultants" at "http://repo.bigbeeconsultants.co.uk/"
 
 resolvers += "wasted.io/repo" at "http://repo.wasted.io/mvn"
 
